@@ -1,3 +1,10 @@
+log.txt
+batch/
+external/
+install/
+bin/
+build/
+
 # Compiled Object files
 *.slo
 *.lo

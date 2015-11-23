@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>F575C822-0408-402D-B692-8251E7851B9B</string>
+	<key>IDESourceControlProjectName</key>
+	<string>example_shapes</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>94D85C1272DE5CE69C4BF207C964E73BC37C1D71</key>
+		<string>git://git.code.sf.net/p/octetframework/code</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>octet/src/apps/l_system/example_shapes.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>94D85C1272DE5CE69C4BF207C964E73BC37C1D71</key>
+		<string>../../../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>git://git.code.sf.net/p/octetframework/code</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>94D85C1272DE5CE69C4BF207C964E73BC37C1D71</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>94D85C1272DE5CE69C4BF207C964E73BC37C1D71</string>
+			<key>IDESourceControlWCCName</key>
+			<string>octetframework-code</string>
+		</dict>
+	</array>
+</dict>
+</plist>

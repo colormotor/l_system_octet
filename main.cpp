@@ -11,6 +11,8 @@
 //#define OCTET_BULLET 0
 
 #include "../../octet.h"
+using namespace octet;
+using namespace octet::scene;
 
 #include "l_system_app.h"
 

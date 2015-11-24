@@ -1,0 +1,4 @@
+renderer:spring
+kp:170.0
+kv:0.01
+m:0.3

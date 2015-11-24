@@ -49,6 +49,10 @@
 		D64803F81C0349F600F6EA67 /* stohokoch.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = stohokoch.txt; sourceTree = "<group>"; };
 		D64803F91C0349F600F6EA67 /* test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.txt; sourceTree = "<group>"; };
 		D64803FA1C0349F600F6EA67 /* va.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = va.txt; sourceTree = "<group>"; };
+		D65C05291C03DD1A00048273 /* common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
+		D65C052A1C03DD8B00048273 /* line_renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = line_renderer.h; sourceTree = "<group>"; };
+		D65C052B1C03DD9C00048273 /* spring_renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spring_renderer.h; sourceTree = "<group>"; };
+		D65C052C1C03E4BA00048273 /* config.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = config.txt; sourceTree = "<group>"; };
 		D6DD5D341C02178000B0B7C7 /* l_system_app.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = l_system_app.h; sourceTree = SOURCE_ROOT; };
 		D6DD5D351C02178000B0B7C7 /* l_system.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = l_system.h; sourceTree = SOURCE_ROOT; };
 		D6DD5D361C02178E00B0B7C7 /* log.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = log.txt; sourceTree = SOURCE_ROOT; };
@@ -127,12 +131,16 @@
 		D6DD5D391C02185800B0B7C7 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				D65C052C1C03E4BA00048273 /* config.txt */,
 				D64803EF1C0349F600F6EA67 /* data */,
 				D6DD5D3A1C02186F00B0B7C7 /* main.cpp */,
 				D6DD5D361C02178E00B0B7C7 /* log.txt */,
 				D6DD5D341C02178000B0B7C7 /* l_system_app.h */,
 				D6DD5D351C02178000B0B7C7 /* l_system.h */,
 				D6DD5D3C1C02191100B0B7C7 /* quick_mesh.h */,
+				D65C05291C03DD1A00048273 /* common.h */,
+				D65C052A1C03DD8B00048273 /* line_renderer.h */,
+				D65C052B1C03DD9C00048273 /* spring_renderer.h */,
 			);
 			name = src;
 			sourceTree = "<group>";

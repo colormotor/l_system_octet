@@ -22,7 +22,7 @@
 		<key>70E95053C275697D97A4C3F84919FAFBEDD4AEB3</key>
 		<string>../..</string>
 		<key>94D85C1272DE5CE69C4BF207C964E73BC37C1D71</key>
-		<string>../../../../../..</string>
+		<string>../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/colormotor/l_system_octet.git</string>
@@ -38,7 +38,7 @@
 			<key>IDESourceControlWCCIdentifierKey</key>
 			<string>94D85C1272DE5CE69C4BF207C964E73BC37C1D71</string>
 			<key>IDESourceControlWCCName</key>
-			<string>..</string>
+			<string></string>
 		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>

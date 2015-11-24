@@ -1,122 +1,11 @@
+
 #include "quick_mesh.h"
+#include "common.h"
 #include "l_system.h"
-#include <dirent.h> // wont work on Windows
+#include "line_renderer.h"
+#include "spring_renderer.h"
 
 using namespace octet;
-
-/// Lists files in a directory
-std::vector<std::string> files_in_directory( const std::string& path )
-{
-    struct dirent *de=NULL;
-    DIR *d=NULL;
-    
-    std::string p = path;
-    p+="/";
-    
-    d=opendir(path.c_str());
-    
-    std::vector<std::string> files;
-    if(d == NULL)
-    {
-        printf("Couldn't open directory\n");
-        return files;
-    }
-    
-    // Loop while not NULL
-    while(de = readdir(d))
-    {
-        if(de->d_type==DT_REG)
-        {
-            std::string name = de->d_name;// de->d_type
-            
-            if(name!=".DS_Store")
-            {
-                files.push_back( p+name );
-            }
-            
-        }
-    }
-    
-    closedir(d);
-    return files;
-}
-
-class LSystemLineRenderer : public LsystemRenderer
-{
-public:
-    LSystemLineRenderer()
-    {
-        stack.push_back(mat4t());
-        mesh = new QuickMesh(GL_LINES);
-    }
-    
-    void begin()
-    {
-        mesh->clear();
-        stack.clear();
-        stack.push_back(mat4t());
-    }
-    
-    void end()
-    {
-        mesh->update();
-        //compute_aabb();
-    }
-    
-    void compute_aabb()
-    {
-        mesh->calc_aabb();
-    }
-    
-    void F() 
-    {
-        mesh->vertex(mat().w().xyz());
-        f();
-        mesh->vertex(mat().w().xyz());
-    }
-    
-    void f() 
-    {
-        // octet vectors are rows
-        mat() = mat4t().translate(0, d, 0) * mat();
-    }
-    
-    void plus() 
-    {
-        mat() = mat4t().rotateZ(-delta) * mat();
-    }
-    
-    void minus() 
-    {
-        mat() = mat4t().rotateZ(+delta) * mat();
-    }
-    
-    void push() 
-    {
-        stack.push_back(stack.back());
-    }
-    
-    void pop() 
-    {
-        if(stack.size() < 2)
-        {
-            printf("Error, stack underflow!\n");
-            return;
-        }
-        
-        stack.pop_back();
-    }
-    
-    mat4t & mat() { return stack.back(); }
-    const mat4t & mat() const { return stack.back(); }
- 
-                     
-    ref<QuickMesh> mesh;
-    std::vector< mat4t > stack;
-    float delta=20.0; // <- degrees
-    float d=1;
-};
-
 
 class LSystemApp : public app {
     // scene for drawing box
@@ -124,7 +13,10 @@ class LSystemApp : public app {
     ref<material> default_mtl;
     ref<QuickMesh> mesh;
     
-    LSystemLineRenderer l_renderer;
+    LineRenderer *line_renderer;
+    SpringRenderer *spring_renderer;
+    LsystemRenderer *renderer;
+    
     Lsystem G;
     
     int n_iter = 7;
@@ -133,12 +25,49 @@ class LSystemApp : public app {
     std::vector<std::string> files;
     
     float scale = 1.0;
+
+    bool dirty=true; // flag indicates we need to update the scene
+    
+    std::map <std::string, float*> config;
     
 public:
     LSystemApp(int argc, char **argv) : app(argc, argv) {
     }
     
     ~LSystemApp() {
+        delete line_renderer;
+        delete spring_renderer;
+    }
+    
+    void parse_config()
+    {
+        std::string str = string_from_file("config.txt");
+        string_vector lines = split(str,"\n");
+
+        for( int i = 0; i < lines.size(); i++ )
+        {
+            std::string l = lines[i];
+            string_vector p = split(l,":");
+            if( in(p[0], config) )
+            {
+                *config[p[0]] = atof(p[1].c_str());
+            }
+            else
+            if( p[0]=="renderer" )
+            {
+                if(p[1]=="line")
+                    renderer = line_renderer;
+                if(p[1]=="spring")
+                    renderer = spring_renderer;
+                else
+                    printf("Unknown renderer in config: %s\n",p[1].c_str());
+            }
+            else
+            {
+                printf("Could not parse %s:%s\n",p[0].c_str(),p[1].c_str());
+            }
+            G.render(renderer);
+        }
     }
     
     void reload()
@@ -153,18 +82,33 @@ public:
         
         if( G.has_default_param("delta") )
         {
-            l_renderer.delta = G.default_params["delta"];
+            renderer->delta = G.default_params["delta"];
         }
         
         G.produce(n_iter);
-        G.set_renderer(&l_renderer);
-        G.render();
-        l_renderer.compute_aabb();
+        G.render(renderer);
+        mesh->calc_aabb();
+
     }
     
     /// this is called once OpenGL is initialized
     void app_init()
     {
+        // mesh shared by renderers
+        mesh = new QuickMesh(GL_LINES);
+        // renderers
+        line_renderer = new LineRenderer(mesh);
+        spring_renderer = new SpringRenderer(mesh);
+        renderer = line_renderer;
+        
+        // add config entries
+        config["kp"] = &spring_renderer->kp;
+        config["kv"] = &spring_renderer->kv;
+        config["m"] = &spring_renderer->m;
+        
+        // read configuration
+        //parse_config();
+        
         // List all files in data dir.
         files = files_in_directory("./data");
         // load first one
@@ -179,7 +123,7 @@ public:
         mat4t mat;
         mat.loadIdentity();
         
-        app_scene->add_shape(mat, l_renderer.mesh, default_mtl, false);
+        app_scene->add_shape(mat, mesh, default_mtl, false);
     }
     
     void keyboard()
@@ -198,14 +142,16 @@ public:
 
         if(is_key_down('A'))
         {
-            l_renderer.delta -= 0.03;
-            printf("delta=%g\n", l_renderer.delta);
+            dirty = true;
+            renderer->delta -= 0.03;
+            printf("delta=%g\n", renderer->delta);
         }
         
         if(is_key_down('S'))
         {
-            l_renderer.delta += 0.03;
-            printf("delta=%g\n", l_renderer.delta);
+            dirty = true;
+            renderer->delta += 0.03;
+            printf("delta=%g\n", renderer->delta);
         }
         
         if(is_key_going_up(key_up))
@@ -234,10 +180,15 @@ public:
                 printf("Producing with %d iterations\n", i);
                 n_iter = i;
                 G.produce(n_iter);
-                G.render();
-                l_renderer.compute_aabb();
+                G.render(renderer);
+                mesh->calc_aabb();
                 break;
             }
+        }
+        
+        if(is_key_going_up(key_tab))
+        {
+            parse_config();
         }
     }
     
@@ -249,7 +200,7 @@ public:
         cam->set_ortho(w, h, 1, -1, 1);
         
         // scaling to fit
-        aabb bb = l_renderer.mesh->get_aabb();
+        aabb bb = mesh->get_aabb();
         float boxw = bb.get_max().x() - bb.get_min().x();
         float boxh = bb.get_max().y() - bb.get_min().y(); //:S
         float ratio = std::max(boxw/w, boxh/h);
@@ -275,7 +226,12 @@ public:
         transform(vx, vy);
         keyboard();
         
-        G.render();
+        if(dirty)
+            G.render(renderer);
+        dirty = false;
+        
+        //l_renderer.mesh->render();
+        
         // update matrices. assume 30 fps.
         app_scene->update(1.0f/30);
         

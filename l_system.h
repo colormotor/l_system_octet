@@ -1,78 +1,4 @@
-
 #pragma once
-#include <vector>
-#include <string>
-#include <map>
-#include <functional>
-#include <sstream>
-
-// Utils:
-/// Weighted random sample between a number of elements in an array
-template <class T>
-T weighted_sample( const std::vector<T>& X, const std::vector<float> &W )
-{
-    float cum = 0.0;
-    for( int i = 0; i < W.size(); i++ )
-        cum += W[i];
-    
-    float sample = drand48()*cum;
-    
-    for( int i = 0; i < X.size(); i++ )
-    {
-        cum -= W[i];
-        if( cum < sample )
-            return X[i];
-    }
-    
-    // we should not be here :/
-    assert(0);
-    return X[0];
-}
-
-/// Python-like check if key is in dictionary
-template <class A, class B>
-bool in( A key, const std::map<A,B>& dict )
-{
-    return dict.find(key) != dict.end();
-}
-
-/// (Wrapper arounf strtok) Splits a string into tokens delimited by characters in delimiters.
-std::vector<std::string> split( const std::string& str, const std::string& delimiters )
-{
-    char * buf = new char[str.length()+1]; // need to consider EOS
-    memcpy(buf, str.c_str(), str.length()+1);
-    
-    std::vector<std::string> tokens;
-    const char * tok = strtok(buf, delimiters.c_str());
-    
-    while(tok != NULL)
-    {
-        tokens.push_back(std::string(tok) + "");
-        tok = strtok(NULL, delimiters.c_str());
-    }
-    
-    delete [] buf;
-    
-    return tokens;
-}
-
-/// Returns a string between two delimiter characters a and b
-std::string string_between( const std::string& str, char a, char b )
-{
-    size_t ia = str.find_first_of(a);
-    if(ia==std::string::npos)
-        return "";
-    size_t ib = str.find_first_of(b);
-    if(ib==std::string::npos)
-        return "";
-    size_t n = ib-ia;
-    if(n < 2)
-    {
-        return "";
-    }
-    return str.substr(ia+1, n-1);
-}
-
 
 ///////////////////////////////////////////////////////
 /// Empty Lsystem renderer
@@ -88,6 +14,9 @@ public:
 	virtual void minus() {}
 	virtual void push() {}
 	virtual void pop() {}
+    
+    float delta=20.0; // <- degrees
+    float d=1;
 };
 
 ///////////////////////////////////////////////////////
@@ -117,34 +46,24 @@ struct Production
 /// L-system meat
 class Lsystem
 {
-public:
-    typedef std::vector<std::string> string_vector;
-    
+public:    
 	// Override these Graphics system specific
-	void F() { renderer->F(); }
-	void f() { renderer->f(); }
-	void plus() { renderer->plus(); }
-	void minus() { renderer->minus(); }
-	void push() { renderer->push(); }
-	void pop() { renderer->pop(); }
-    
-    virtual LsystemRenderer * get_renderer() { return renderer; }
-    virtual void set_renderer( LsystemRenderer * renderer_ )
-    {
-        renderer = renderer_;
-    }
+	void F( LsystemRenderer * renderer ) { renderer->F(); }
+	void f( LsystemRenderer * renderer ) { renderer->f(); }
+	void plus( LsystemRenderer * renderer ) { renderer->plus(); }
+	void minus( LsystemRenderer * renderer ) { renderer->minus(); }
+	void push( LsystemRenderer * renderer ) { renderer->push(); }
+	void pop( LsystemRenderer * renderer ) { renderer->pop(); }
     
 	Lsystem()
 	{
-		renderer = &emptyRenderer;
-
         // create our alphabet
-		alphabet['F'] = std::bind(&Lsystem::F, this);
-		alphabet['f'] = std::bind(&Lsystem::f, this);
-		alphabet['+'] = std::bind(&Lsystem::plus, this);
-		alphabet['-'] = std::bind(&Lsystem::minus, this);
-		alphabet['['] = std::bind(&Lsystem::push, this);
-		alphabet[']'] = std::bind(&Lsystem::pop, this);
+        alphabet['F'] = std::bind(&Lsystem::F, this, std::placeholders::_1 );
+		alphabet['f'] = std::bind(&Lsystem::f, this, std::placeholders::_1 );
+		alphabet['+'] = std::bind(&Lsystem::plus, this, std::placeholders::_1 );
+		alphabet['-'] = std::bind(&Lsystem::minus, this, std::placeholders::_1 );
+		alphabet['['] = std::bind(&Lsystem::push, this, std::placeholders::_1 );
+		alphabet[']'] = std::bind(&Lsystem::pop, this, std::placeholders::_1 );
         
         // additional symbols can be added by overriding this class
         // and adding entries with corresponding functions, and overriding
@@ -153,16 +72,10 @@ public:
     
     bool parse_file( const std::string & path )
     {
-        std::ifstream f(path);
-        if(f.fail())
-        {
-            printf("Could not open file %s\n", path.c_str());
+        std::string str = string_from_file(path);
+        if(str=="")
             return false;
-        }
-        
-        std::stringstream buffer;
-        buffer << f.rdbuf();
-        return parse(buffer.str());
+        return parse(str);
     }
     
     /// Reads optional parameters from the lines of a configuration.
@@ -319,11 +232,11 @@ public:
 	}
 
     /// Render parsed L-system
-	void render()
+	void render( LsystemRenderer * renderer )
 	{
         renderer->begin();
 		for( int i = 0; i < l_system.size(); i++ )
-			l_system[i]();
+			l_system[i](renderer);
         renderer->end();
 	}
     
@@ -343,15 +256,12 @@ public:
         return default_params[str];
     }
     
-	LsystemRenderer * renderer;
-	LsystemRenderer emptyRenderer;
-
-	std::vector< std::function<void()> > l_system;
+	std::vector< std::function<void(LsystemRenderer*)> > l_system;
 	
 	std::string axiom;
     
 	std::map<char, Production> P;
-	std::map<char, std::function<void()> > alphabet;
+	std::map<char, std::function<void(LsystemRenderer*)> > alphabet;
     
     std::map<std::string, float> default_params;
 };

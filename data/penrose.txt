@@ -1,0 +1,7 @@
+{n:2;delta:36}
+[N]++[N]++[N]++[N]++[N]
+M:OF++pF----NF[-OF----MF]++
+N:+OF--PF[---MF--NF]+
+O:-MF++NF[+++OF++PF]-
+P:--OF++++MF[+PF++++NF]--NF
+F:

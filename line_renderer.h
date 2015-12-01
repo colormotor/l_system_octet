@@ -31,9 +31,9 @@ public:
     
     void F()
     {
-        mesh->vertex(mat().w().xyz());
+        mesh->vertex(vec4(0,0,0,1)*mat()); // or optionally mat().w().xyz());
         f();
-        mesh->vertex(mat().w().xyz());
+        mesh->vertex(vec4(0,0,0,1)*mat());// mat().w().xyz());
     }
     
     void f()
@@ -44,12 +44,12 @@ public:
     
     void plus()
     {
-        mat() = mat4t().rotateZ(+delta) * mat();
+        mat() = mat4t().rotateZ(+(delta+delta_offset)) * mat();
     }
     
     void minus()
     {
-        mat() = mat4t().rotateZ(-delta) * mat();
+        mat() = mat4t().rotateZ(-(delta+delta_offset)) * mat();
     }
     
     void push()

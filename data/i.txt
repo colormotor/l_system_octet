@@ -1,4 +1,4 @@
-{n:6;delta:25.7}
+{n:6;delta:25.7,60}
 X
 X:F[+X][-X]FX
 F:FF

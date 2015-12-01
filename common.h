@@ -7,6 +7,10 @@
 
 #include <dirent.h> // wont work on Windows
 
+#define STRINGIFY( expr ) #expr
+
+typedef std::vector<std::string> string_vector;
+typedef std::vector<vec3> polyline;
 
 /// Lists files in a directory
 std::vector<std::string> files_in_directory( const std::string& path )
@@ -126,5 +130,4 @@ std::string string_from_file( const std::string & path )
     return buffer.str();
 }
 
-typedef std::vector<std::string> string_vector;
 

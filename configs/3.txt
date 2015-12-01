@@ -1,0 +1,7 @@
+kp:150
+damping_ratio:0.1
+delta_trunk:0.3
+t_mul:1.0
+speed:8.5
+dt:0.005    
+isochrony:local

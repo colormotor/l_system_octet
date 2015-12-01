@@ -38,21 +38,30 @@
 		81E4F21619EB432300EACF8C /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; name = shaders; path = ../../../shaders; sourceTree = "<group>"; };
 		81E4F21719EB434100EACF8C /* math */ = {isa = PBXFileReference; lastKnownFileType = text; name = math; path = ../../math; sourceTree = "<group>"; };
 		81E4F21819EB44E700EACF8C /* platform */ = {isa = PBXFileReference; lastKnownFileType = text; name = platform; path = ../../platform; sourceTree = "<group>"; };
-		D64803F01C0349F600F6EA67 /* a_koch_1.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = a_koch_1.txt; sourceTree = "<group>"; };
+		D61567851C068F910079ECBA /* penrose.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = penrose.txt; sourceTree = "<group>"; };
+		D61567861C068F910079ECBA /* hilbert.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = hilbert.txt; sourceTree = "<group>"; };
+		D61567871C069DE90079ECBA /* sprials.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sprials.txt; sourceTree = "<group>"; };
 		D64803F11C0349F600F6EA67 /* b.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = b.txt; sourceTree = "<group>"; };
 		D64803F21C0349F600F6EA67 /* c.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = c.txt; sourceTree = "<group>"; };
 		D64803F31C0349F600F6EA67 /* d.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = d.txt; sourceTree = "<group>"; };
 		D64803F41C0349F600F6EA67 /* e.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = e.txt; sourceTree = "<group>"; };
 		D64803F51C0349F600F6EA67 /* f.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = f.txt; sourceTree = "<group>"; };
-		D64803F61C0349F600F6EA67 /* koch.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = koch.txt; sourceTree = "<group>"; };
+		D64803F61C0349F600F6EA67 /* koch_random.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = koch_random.txt; sourceTree = "<group>"; };
 		D64803F71C0349F600F6EA67 /* koch_1.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = koch_1.txt; sourceTree = "<group>"; };
 		D64803F81C0349F600F6EA67 /* stohokoch.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = stohokoch.txt; sourceTree = "<group>"; };
-		D64803F91C0349F600F6EA67 /* test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.txt; sourceTree = "<group>"; };
-		D64803FA1C0349F600F6EA67 /* va.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = va.txt; sourceTree = "<group>"; };
+		D64803F91C0349F600F6EA67 /* g.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = g.txt; sourceTree = "<group>"; };
+		D64803FA1C0349F600F6EA67 /* a.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = a.txt; sourceTree = "<group>"; };
 		D65C05291C03DD1A00048273 /* common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
 		D65C052A1C03DD8B00048273 /* line_renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = line_renderer.h; sourceTree = "<group>"; };
 		D65C052B1C03DD9C00048273 /* spring_renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spring_renderer.h; sourceTree = "<group>"; };
-		D65C052C1C03E4BA00048273 /* config.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = config.txt; sourceTree = "<group>"; };
+		D65C052C1C03E4BA00048273 /* dynamics.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dynamics.txt; sourceTree = "<group>"; };
+		D6880BFE1C061CEB00D1EF59 /* eps_file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eps_file.h; sourceTree = "<group>"; };
+		D68E67231C0D186700E6010E /* 1.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = 1.txt; sourceTree = "<group>"; };
+		D68E67241C0D186700E6010E /* 2.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = 2.txt; sourceTree = "<group>"; };
+		D68E67251C0D1D5200E6010E /* h.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = h.txt; sourceTree = "<group>"; };
+		D68E67261C0D1D6700E6010E /* i.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = i.txt; sourceTree = "<group>"; };
+		D6BB25881C09AB07002F8C3D /* spring_renderer_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spring_renderer_old.h; sourceTree = "<group>"; };
+		D6BB25891C09B5F8002F8C3D /* dp_simplify.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dp_simplify.h; sourceTree = "<group>"; };
 		D6DD5D341C02178000B0B7C7 /* l_system_app.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = l_system_app.h; sourceTree = SOURCE_ROOT; };
 		D6DD5D351C02178000B0B7C7 /* l_system.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = l_system.h; sourceTree = SOURCE_ROOT; };
 		D6DD5D361C02178E00B0B7C7 /* log.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = log.txt; sourceTree = SOURCE_ROOT; };
@@ -99,19 +108,31 @@
 		D64803EF1C0349F600F6EA67 /* data */ = {
 			isa = PBXGroup;
 			children = (
-				D64803F01C0349F600F6EA67 /* a_koch_1.txt */,
+				D61567851C068F910079ECBA /* penrose.txt */,
+				D61567861C068F910079ECBA /* hilbert.txt */,
 				D64803F11C0349F600F6EA67 /* b.txt */,
 				D64803F21C0349F600F6EA67 /* c.txt */,
 				D64803F31C0349F600F6EA67 /* d.txt */,
+				D68E67251C0D1D5200E6010E /* h.txt */,
 				D64803F41C0349F600F6EA67 /* e.txt */,
+				D68E67261C0D1D6700E6010E /* i.txt */,
 				D64803F51C0349F600F6EA67 /* f.txt */,
-				D64803F61C0349F600F6EA67 /* koch.txt */,
+				D64803F61C0349F600F6EA67 /* koch_random.txt */,
 				D64803F71C0349F600F6EA67 /* koch_1.txt */,
 				D64803F81C0349F600F6EA67 /* stohokoch.txt */,
-				D64803F91C0349F600F6EA67 /* test.txt */,
-				D64803FA1C0349F600F6EA67 /* va.txt */,
+				D64803F91C0349F600F6EA67 /* g.txt */,
+				D64803FA1C0349F600F6EA67 /* a.txt */,
 			);
 			path = data;
+			sourceTree = "<group>";
+		};
+		D68E67221C0D186700E6010E /* configs */ = {
+			isa = PBXGroup;
+			children = (
+				D68E67231C0D186700E6010E /* 1.txt */,
+				D68E67241C0D186700E6010E /* 2.txt */,
+			);
+			path = configs;
 			sourceTree = "<group>";
 		};
 		D6DD5D331C02176400B0B7C7 /* octet */ = {
@@ -131,7 +152,10 @@
 		D6DD5D391C02185800B0B7C7 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				D65C052C1C03E4BA00048273 /* config.txt */,
+				D68E67221C0D186700E6010E /* configs */,
+				D6880BFE1C061CEB00D1EF59 /* eps_file.h */,
+				D65C052C1C03E4BA00048273 /* dynamics.txt */,
+				D61567871C069DE90079ECBA /* sprials.txt */,
 				D64803EF1C0349F600F6EA67 /* data */,
 				D6DD5D3A1C02186F00B0B7C7 /* main.cpp */,
 				D6DD5D361C02178E00B0B7C7 /* log.txt */,
@@ -141,6 +165,8 @@
 				D65C05291C03DD1A00048273 /* common.h */,
 				D65C052A1C03DD8B00048273 /* line_renderer.h */,
 				D65C052B1C03DD9C00048273 /* spring_renderer.h */,
+				D6BB25881C09AB07002F8C3D /* spring_renderer_old.h */,
+				D6BB25891C09B5F8002F8C3D /* dp_simplify.h */,
 			);
 			name = src;
 			sourceTree = "<group>";

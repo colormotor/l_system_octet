@@ -1,0 +1,7 @@
+kp:990
+damping_ratio:2.09
+delta_trunk:1.4
+t_mul:1.9
+speed:7.5
+dt:0.005    
+isochrony:global

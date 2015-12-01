@@ -2,6 +2,7 @@
 #include "quick_mesh.h"
 #include "common.h"
 #include "l_system.h"
+#include "eps_file.h"
 #include "line_renderer.h"
 #include "spring_renderer.h"
 
@@ -20,13 +21,18 @@ class LSystemApp : public app {
     Lsystem G;
     
     int n_iter = 7;
-    int cur_file = 0;
     
     std::vector<std::string> files;
+    int cur_file = 0;
+    
+    std::vector<std::string> config_files;
+    int cur_config = 0;
     
     float scale = 1.0;
-
+    float speed = 1.0;
+    
     bool dirty=true; // flag indicates we need to update the scene
+    bool update_box_when_dirty=true;
     
     std::map <std::string, float*> config;
     
@@ -41,7 +47,9 @@ public:
     
     void parse_config()
     {
-        std::string str = string_from_file("config.txt");
+        printf("Parsing configuration %s\n",config_files[cur_config].c_str());
+        
+        std::string str = string_from_file(config_files[cur_config]);
         string_vector lines = split(str,"\n");
 
         for( int i = 0; i < lines.size(); i++ )
@@ -52,27 +60,29 @@ public:
             {
                 *config[p[0]] = atof(p[1].c_str());
             }
-            else
-            if( p[0]=="renderer" )
+            else if( p[0]=="isochrony")
             {
-                if(p[1]=="line")
-                    renderer = line_renderer;
-                if(p[1]=="spring")
-                    renderer = spring_renderer;
-                else
-                    printf("Unknown renderer in config: %s\n",p[1].c_str());
+                spring_renderer->isochrony = SpringRenderer::ISOCHRONY_LOCAL;
+                if(p[1]=="local")
+                        spring_renderer->isochrony = SpringRenderer::ISOCHRONY_LOCAL;
+                else if(p[1]=="global")
+                    spring_renderer->isochrony = SpringRenderer::ISOCHRONY_GLOBAL;
+                printf("Isochrony: %s\n", p[1].c_str());
             }
             else
             {
                 printf("Could not parse %s:%s\n",p[0].c_str(),p[1].c_str());
             }
-            G.render(renderer);
         }
+        
+        G.render(renderer);
+        mesh->calc_aabb();
     }
     
     void reload()
     {
         printf("Loading %s\n",files[cur_file].c_str());
+        renderer->delta_offset = 0;
         G.parse_file(files[cur_file]);
         
         if( G.has_default_param("n") )
@@ -84,6 +94,7 @@ public:
         {
             renderer->delta = G.default_params["delta"];
         }
+        
         
         G.produce(n_iter);
         G.render(renderer);
@@ -101,24 +112,32 @@ public:
         spring_renderer = new SpringRenderer(mesh);
         renderer = line_renderer;
         
-        // add config entries
+        // add config entries,
+        // keys in the config dictionary point to correspondig values
+        // that will be automatically set when loading a configuration file.
         config["kp"] = &spring_renderer->kp;
-        config["kv"] = &spring_renderer->kv;
-        config["m"] = &spring_renderer->m;
-        
-        // read configuration
-        //parse_config();
+        config["damping_ratio"] = &spring_renderer->damping_ratio;
+        config["delta_trunk"] = &spring_renderer->delta_trunk;
+        config["speed"] = &spring_renderer->speed;
+        config["t_mul"] = &spring_renderer->t_mul;
+        config["dt"] = &spring_renderer->dt;
         
         // List all files in data dir.
         files = files_in_directory("./data");
-        // load first one
+        // List all config files in  dir.
+        config_files = files_in_directory("./configs");
+        
+        // read first configuration
+        parse_config();
+
+        // load first l-system
         reload();
         
         app_scene =  new visual_scene();
         app_scene->create_default_camera_and_lights();
         app_scene->get_camera_instance(0)->get_node()->translate(vec3(0, 4, 0));
         
-        default_mtl = new material(vec4(0, 0, 0, 0.8));
+        default_mtl = new material(vec4(0, 0, 0, 0.5)); //new material(vec4(0, 0, 0, 0.8));
         
         mat4t mat;
         mat.loadIdentity();
@@ -139,19 +158,21 @@ public:
             scale += 0.1;
             printf("scale=%g\n", scale);
         }
-
+        
+        float delta_inc = 0.03;
+        if(renderer==spring_renderer)
+            delta_inc = 0.5;
+        
         if(is_key_down('A'))
         {
             dirty = true;
-            renderer->delta -= 0.03;
-            printf("delta=%g\n", renderer->delta);
+            renderer->delta_offset -= delta_inc;
         }
         
         if(is_key_down('S'))
         {
             dirty = true;
-            renderer->delta += 0.03;
-            printf("delta=%g\n", renderer->delta);
+            renderer->delta_offset += delta_inc;
         }
         
         if(is_key_going_up(key_up))
@@ -168,10 +189,34 @@ public:
             reload();
         }
         
+        if(is_key_going_up(key_right))
+        {
+            cur_config = cur_config-1;
+            if( cur_config < 0 )
+                cur_config += config_files.size();
+            parse_config();
+            dirty = true;
+        }
+        
+        if(is_key_going_up(key_left))
+        {
+            cur_config = (cur_config+1)%config_files.size();
+            parse_config();
+            dirty = true;
+        }
+        
+        if(is_key_going_up(key_tab))
+        {
+            parse_config();
+        }
+        
         if(is_key_going_up(' '))
         {
             reload();
         }
+        
+        if(is_key_going_up('B'))
+            update_box_when_dirty = !update_box_when_dirty;
         
         for( int i = 0; i < 9; i++ )
         {
@@ -186,8 +231,20 @@ public:
             }
         }
         
-        if(is_key_going_up(key_tab))
+        if(is_key_going_up('E')
+           && renderer == spring_renderer)
         {
+            printf("Rendering EPS\n");
+            spring_renderer->render_eps();
+        }
+        
+        if(is_key_going_up('R'))
+        {
+            if(renderer == spring_renderer)
+                renderer = line_renderer;
+            else
+            if(renderer == line_renderer)
+                renderer = spring_renderer;
             parse_config();
         }
     }
@@ -211,23 +268,29 @@ public:
         cam->get_node()->scale(vec3(ratio*scale, ratio*scale, 1));
 
     }
-    
+
     /// this is called to draw the world
     void draw_world(int x, int y, int w, int h)
     {
         int vx = 0, vy = 0;
         get_viewport_size(vx, vy);
         
-        app_scene->begin_render(w, h, vec4(0.99, 0.998, 1, 1));
+        app_scene->begin_render(w, h, vec4(0.99, 0.998, 1, 1)); //vec4(0.01, 0.01, 0.05, 1)); //
         
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
         transform(vx, vy);
+        //update();
         keyboard();
         
         if(dirty)
+        {
             G.render(renderer);
+            if(update_box_when_dirty)
+                mesh->calc_aabb();
+        }
+        
         dirty = false;
         
         //l_renderer.mesh->render();

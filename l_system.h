@@ -1,5 +1,40 @@
 #pragma once
 
+/// Float value wrapper. allows to randomly select from a set of values.
+class FloatParam
+{
+public:
+    FloatParam( float v = 0.0 )
+    {
+        values.push_back(v);
+    }
+    
+    FloatParam(const std::string &value)
+    {
+        string_vector S = split(value,",");
+        if(S.size() == 0)
+            S.push_back(value);
+        for( int i=0; i < S.size(); i++ )
+            values.push_back(atof(S[i].c_str()));
+    }
+    
+    operator float() const
+    {
+        if(!values.size())
+            return 0.0;
+        
+        return values[ rand()%values.size() ];
+    }
+    
+    const FloatParam & operator = (float v)
+    {
+        values.clear();
+        values.push_back(v);
+    }
+    
+    std::vector<float> values;
+};
+
 ///////////////////////////////////////////////////////
 /// Empty Lsystem renderer
 class LsystemRenderer
@@ -15,16 +50,18 @@ public:
 	virtual void push() {}
 	virtual void pop() {}
     
-    float delta=20.0; // <- degrees
-    float d=1;
+    FloatParam delta=20.0; // Angle, the FloatParam allows for randomization
+    float delta_offset=0.0;
+    int d=1;
 };
 
+
 ///////////////////////////////////////////////////////
-/// Production rule for a given predecessor alpha
+/// Production rule for a given predecessor a
 /// Multiple successors can be specified with weights determining the likelyhood of being samples.
 struct Production
 {
-	char alpha;
+	char a;
 
     std::vector<float> weights;
 	std::vector<std::string> successors;
@@ -34,7 +71,7 @@ struct Production
 		// return same in case
 		if( successors.size() < 1 )
 		{
-			return std::string(1,alpha);
+			return std::string(1,a);
 		}
         
         return weighted_sample(successors, weights);
@@ -70,6 +107,7 @@ public:
         // get_renderer/set_renderer with an apporpriate extended renderer.
 	}
     
+    /// Parses an l-system description file
     bool parse_file( const std::string & path )
     {
         std::string str = string_from_file(path);
@@ -78,7 +116,7 @@ public:
         return parse(str);
     }
     
-    /// Reads optional parameters from the lines of a configuration.
+    /// Reads optional parameters from the lines of an l-system description.
     /// If parameters are found (between {} brackets),
     /// A new array is returned with the parameter specification line removed
     string_vector check_params( const string_vector& lines_ )
@@ -95,13 +133,13 @@ public:
             return lines;
         
         // otherwise parse and store in default_params dict.
-        string_vector P = split(params, ",");
+        string_vector P = split(params, ";");
         for( int i = 0; i < P.size(); i++ )
         {
             string_vector p = split(P[i],":");
             if( p.size() != 2 )
                 continue;
-            default_params[p[0]] = atof(p[1].c_str());
+            default_params[p[0]] = FloatParam(p[1].c_str());
         }
         
         // as nothing happened
@@ -109,7 +147,7 @@ public:
         return lines;
     }
     
-    /// Parse a configuration string
+    /// Parse an L-System specification string
 	bool parse( const std::string& str )
 	{
         clear();
@@ -142,16 +180,19 @@ public:
 	bool parse_production( const std::string& str )
 	{
 		std::vector<std::string> prod = split(str,":");
-		if( prod.size() != 2 )
+        
+		if( prod.size() < 1 )
 		{
 			printf("Invalid production rule %s \n", str.c_str());
 			return false;
 		}
 
 		std::string a_str = prod[0];
-		std::string chi = prod[1];
+        std::string chi = "";
+        if( prod.size() > 1 )
+            chi = prod[1];
 		
-		char alpha = a_str[0];
+		char a = a_str[0];
 		
 		float w = 1.0;
 		
@@ -161,9 +202,9 @@ public:
 			w = atof(weight_str.c_str());
 		
 		// add or update proudction
-		if( in(alpha, P) )
+		if( in(a, P) )
 		{
-			Production & p = P[alpha];
+			Production & p = P[a];
 			p.successors.push_back(chi);
 			p.weights.push_back(w);	
 		}
@@ -172,7 +213,7 @@ public:
 			Production p;
 			p.successors.push_back(chi);
 			p.weights.push_back(w);	
-			P[alpha] = p;
+			P[a] = p;
 		}
         
         return true;
@@ -185,20 +226,20 @@ public:
         
 		for( int i = 0; i < str.length(); i++ )
 		{
-            char alpha = str[i];
+            char a = str[i];
             
             // skip whitespaces tabs etc..
-            if( !isalnum(alpha) && !ispunct(alpha) )
+            if( !isalnum(a) && !ispunct(a) )
                 continue;
             
-            if(in(alpha, P))
+            if(in(a, P))
             {
                 Production & e = P[str[i]];
                 res += e.successor();
             }
             else
             {
-                res += std::string(1, alpha);
+                res += std::string(1, a);
             }
 		}
         
@@ -231,7 +272,7 @@ public:
 		}
 	}
 
-    /// Render parsed L-system
+    /// Render parsed L-system with a given renderer
 	void render( LsystemRenderer * renderer )
 	{
         renderer->begin();
@@ -240,6 +281,7 @@ public:
         renderer->end();
 	}
     
+    // Clear the L-System
     void clear()
     {
         l_system.clear();
@@ -263,6 +305,6 @@ public:
 	std::map<char, Production> P;
 	std::map<char, std::function<void(LsystemRenderer*)> > alphabet;
     
-    std::map<std::string, float> default_params;
+    std::map<std::string, FloatParam> default_params;
 };
 

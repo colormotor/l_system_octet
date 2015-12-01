@@ -1,6 +1,5 @@
 #pragma once
 
-#include "dp_simplify.h"
 
 vec3 interpolate_polyline( const polyline & P, float t )
 {
@@ -17,32 +16,58 @@ vec3 interpolate_polyline( const polyline & P, float t )
     return P[iseg]*t1 + P[iseg+1]*t;
 }
 
-// t = floor(i * nsegs)
-// 1.0 / m-1
-
-
-float polyline_length( const polyline & P )
+polyline mass_spring_path( const polyline & P, float m=0.1, float kp=70, float kv=30, float dtmul=1.0 )
 {
-    float l = 0.0;
-    for( int i = 0; i < P.size()-1; i++ )
+    vec3 v = vec3(0,0,0);
+    vec3 a = vec3(0,0,0);
+    vec3 f = vec3(0,0,0);
+    
+    vec3 p = P[0];
+    
+    polyline res;
+    int n = 200;
+    float dt = 1.0/n;
+    n = (float)n * dtmul;
+    for( int i = 0; i < n; i++ )
     {
-        l += (P[i+1]-P[i]).length();
+        vec3 ph = interpolate_polyline(P, (float)i / 200);
+        f = m*a - v*kv + (ph-p)*kp;
+        a = f;
+        v += f*dt;
+        p += v*dt;
+        res.push_back(p);
     }
-    return l;
+    
+    return res;
 }
 
-
+polyline spring_path( const polyline & P, float kp=70, float kv=30 )
+{
+    vec3 v = vec3(0,0,0);
+    vec3 a = vec3(0,0,0);
+    vec3 f = vec3(0,0,0);
+    
+    vec3 p = P[0];
+    
+    polyline res;
+    int n = 200;
+    float dt = 1.0/n;
+    for( int i = 0; i < n; i++ )
+    {
+        vec3 ph = interpolate_polyline(P, (float)i / 200);
+        f = (ph-p)*kp - v*kv;
+        v += f*dt;
+        p += v*dt;
+        res.push_back(p);
+    }
+    
+    return res;
+}
 
 
 class SpringRenderer : public LsystemRenderer
 {
 public:
-    enum
-    {
-        ISOCHRONY_NONE = 0,
-        ISOCHRONY_LOCAL = 1,
-        ISOCHRONY_GLOBAL = 2
-    };
     
     SpringRenderer( QuickMesh * mesh )
     :
@@ -114,56 +139,10 @@ public:
         polylines.clear();
     }
     
-    polyline spring_path( const polyline & P, float speed, float kp=70, float kv=30, float dt=0.001, float t_mul=1.0 )
-    {
-        vec3 v = vec3(0,0,0);
-        vec3 a = vec3(0,0,0);
-        vec3 f = vec3(0,0,0);
-
-        vec3 p = P[0];
-        
-        polyline res;
-        
-        //float t_end = polyline_length(P) / speed;
-        // local isochrony, each segment has a fixed duration independent
-        float t_end = 0.0;
-        switch(isochrony)
-        {
-            case ISOCHRONY_NONE:
-                t_end = polyline_length(P) / speed;
-                break;
-            case ISOCHRONY_LOCAL:
-                t_end = (float)(P.size()-1) / speed;
-                break;
-            case ISOCHRONY_GLOBAL:
-                t_end = 5.0 / speed;
-                break;
-        }
-        
-        float duration = t_end * t_mul;
-        
-        float t = 0.0;
-        
-        while( t < duration )
-        {
-            // equilibrium point linearly interpolated along path
-            vec3 eq_p = interpolate_polyline(P, t/t_end);
-            
-            f = - v*kv + (eq_p-p)*kp;
-            //a = f;
-            v += f*dt;
-            p += v*dt;
-            res.push_back(p);
-            
-            t+=dt;
-        }
-        
-        return res;
-    }
-    
     void add_polyline( const polyline & P )
     {
         //polyline Pflower = P;
+        
         polylines.push_back(P);
         
         // reversed since we start from tree root
@@ -185,11 +164,6 @@ public:
         }
         
         mesh->clear();
-        
-        // set damping as a ratio of a critically damped system.
-        // damping_ratio = 1 is critically damped
-        float kv = damping_ratio * 2.0 * sqrt(kp);
-
         for( int i = 0; i < leafs.size(); i++ )
         {
             Node * n = leafs[i];
@@ -204,11 +178,11 @@ public:
             
             // reverse because we begin from root
             std::reverse(P.begin(),P.end());
-            P = dp_simplify(P, 0.1);
             
-            P[0].x() += (drand48()-0.5)*delta_trunk*2;
+            P[0].x() += (drand48()-0.5)*start_offset*2;
             //P[0].y() += (drand48()-0.5)*start_offset*2;
-            add_polyline(spring_path(P, speed, kp, kv, dt, t_mul));
+            
+            add_polyline(mass_spring_path(P, m, kp, kv, dtmul));
         }
         mesh->update();
     }
@@ -286,15 +260,10 @@ public:
     std::vector< Node* > node_stack;
     
     float kp=70.0;
-    //float kv=30.0;
+    float kv=30.0;
     float m=0.1;
-    float delta_trunk=0.0;
-    float t_mul=1.0;
-    float speed=1.0;
-    float dt=0.001;
-    float damping_ratio=1.0;
-    
-    int isochrony=ISOCHRONY_NONE;
+    float start_offset=0.0;
+    float dtmul=1.0;
     
     std::vector<Node*> nodes;
     Node *tree=0;

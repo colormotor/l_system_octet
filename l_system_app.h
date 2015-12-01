@@ -95,11 +95,9 @@ public:
             renderer->delta = G.default_params["delta"];
         }
         
-        
         G.produce(n_iter);
         G.render(renderer);
         mesh->calc_aabb();
-
     }
     
     /// this is called once OpenGL is initialized

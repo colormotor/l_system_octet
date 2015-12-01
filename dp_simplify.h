@@ -1,3 +1,4 @@
+// Code adapted from LibCinder
 // local defs for simplify
 
 typedef struct{

@@ -2,6 +2,7 @@
 
 #include "dp_simplify.h"
 
+// Linearly interpolates between segments of a polyline t=[0,1]
 vec3 interpolate_polyline( const polyline & P, float t )
 {
     if( t < 0.0 )
@@ -17,10 +18,7 @@ vec3 interpolate_polyline( const polyline & P, float t )
     return P[iseg]*t1 + P[iseg+1]*t;
 }
 
-// t = floor(i * nsegs)
-// 1.0 / m-1
-
-
+/// Returns the length of a polyline
 float polyline_length( const polyline & P )
 {
     float l = 0.0;
@@ -30,9 +28,6 @@ float polyline_length( const polyline & P )
     }
     return l;
 }
-
-
-
 
 class SpringRenderer : public LsystemRenderer
 {
@@ -124,7 +119,6 @@ public:
         
         polyline res;
         
-        //float t_end = polyline_length(P) / speed;
         // local isochrony, each segment has a fixed duration independent
         float t_end = 0.0;
         switch(isochrony)
@@ -163,7 +157,6 @@ public:
     
     void add_polyline( const polyline & P )
     {
-        //polyline Pflower = P;
         polylines.push_back(P);
         
         // reversed since we start from tree root
@@ -265,7 +258,6 @@ public:
     
     void render()
     {
-        
     }
     
     void render_eps()
@@ -286,7 +278,6 @@ public:
     std::vector< Node* > node_stack;
     
     float kp=70.0;
-    //float kv=30.0;
     float m=0.1;
     float delta_trunk=0.0;
     float t_mul=1.0;

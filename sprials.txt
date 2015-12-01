@@ -1,5 +1,0 @@
-renderer:spring
-kp:150
-kv:3.5
-m:0.3
-start_offset:2.0

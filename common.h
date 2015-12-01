@@ -116,6 +116,7 @@ std::string string_between( const std::string& str, char a, char b )
     return str.substr(ia+1, n-1);
 }
 
+/// Extracts a string from a file
 std::string string_from_file( const std::string & path )
 {
     std::ifstream f(path);

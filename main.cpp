@@ -8,7 +8,6 @@
 //
 
 #pragma warning(disable : 4267)
-//#define OCTET_BULLET 0
 
 #include "../../octet.h"
 using namespace octet;
@@ -16,7 +15,6 @@ using namespace octet::scene;
 
 #include "l_system_app.h"
 
-/// Create a box with octet
 int main(int argc, char **argv)
 {
     // set up the platform.

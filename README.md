@@ -2,6 +2,12 @@
 
 A simple implementation of stochastic L-Systems, with a rendering mode using a spring-damper system.
 
+## Compiling and Running.
+
+Download or clone the latest version of Octet Framework (https://github.com/andy-thomason/octet). 
+Then clone this repository into a folder in the octet/src/examples directory, or in a custom directory at the same level.
+To compile follow the same procedure used for compiling the other Octet examples.
+
 ## Keyboard commands:
 * **Z** Decreases the rendering scale.
 * **X** Increases the rendering scale.
